@@ -11,9 +11,7 @@ class App extends Component {
 				id: uniqid(),
 			},
 			tasks: [],
-			edit: false,
 		};
-		this.editTask = this.editTask.bind(this);
 	}
 
 	handleChange = (e) => {
@@ -43,20 +41,22 @@ class App extends Component {
 		});
 	};
 
-	editTask(e) {
-		const submitIcon = e.target.nextSibling;
-		console.log(submitIcon);
-		// const value = e.target.closest("li").textContent;
-		// console.log(value);
-		// return <input type="text" value={value} />;
-		this.setState({
-			tasks: this.state.tasks,
-			edit: true,
-		});
-		console.log(this.state);
-	}
+	submitEdit = (e) => {
+		const newValue = e.target.closest("li").firstChild.value;
+		const targetID = e.target.closest("li").id;
+		const editIcon = e.target.closest("div").firstChild;
+		const submitIcon = editIcon.nextSibling;
 
-	submitEdit = (e) => {};
+		let newTasks = this.state.tasks.slice();
+		newTasks.forEach((task) => {
+			if (task.id === targetID) task.value = newValue ? newValue : task.value;
+		});
+		editIcon.classList.remove("hidden");
+		submitIcon.classList.add("hidden");
+		this.setState({
+			tasks: newTasks,
+		});
+	};
 
 	render() {
 		return (
@@ -75,7 +75,7 @@ class App extends Component {
 				<Overview
 					tasks={this.state.tasks}
 					onClick={this.deleteTask}
-					editFn={this.editTask}
+					edit={this.state.edit}
 					submitFn={this.submitEdit}
 				/>
 			</div>

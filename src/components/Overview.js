@@ -4,38 +4,57 @@ import DeleteIcon from "./DeleteIcon";
 import EditIcon from "./EditIcon";
 
 const ListDisplay = (props) => {
-	const edit = props.edit;
-	if (edit) {
-		return <input type="text" />;
+	const { edit, id, editID, value } = props;
+	if (edit && id === editID) {
+		return <input type="text" placeholder={value} />;
 	}
-	return props.value;
+	return value;
 };
 
 class Overview extends Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+			edit: false,
+			editID: null,
+		};
+		this.editTask = this.editTask.bind(this);
 	}
+
+	editTask(e) {
+		const editIcon = e.target.closest("svg");
+		const submitIcon = editIcon.nextSibling;
+		this.setState({
+			edit: true,
+			editID: e.target.closest("li").id,
+		});
+		editIcon.classList.add("hidden");
+		submitIcon.classList.remove("hidden");
+	}
+
 	render() {
 		const { tasks } = this.props;
-		const editField = <input type="text" />;
-		// const listItems = tasks.map((task) => (
-		// 	<li key={task.id} id={task.id}>
-		// 		{!props.edit ? task.value : editField}
-		// 		<DeleteIcon handleClick={props.onClick} />
-		// 		<EditIcon editFn={props.editFn} submitFn={props.submitFn} />
-		// 	</li>
-		// ));
-		// return <ul>{listItems}</ul>;
 		return (
 			<ul>
 				{tasks.map((task) => (
 					<li key={task.id} id={task.id}>
-						<ListDisplay value={task.value} edit={this.props.edit} />
-						<DeleteIcon handleClick={this.props.onClick} />
-						<EditIcon
-							editFn={this.props.editFn}
-							submitFn={this.props.submitFn}
+						<ListDisplay
+							value={task.value}
+							edit={this.state.edit}
+							id={task.id}
+							editID={this.state.editID}
 						/>
+						<EditIcon
+							editFn={this.editTask}
+							submitFn={(e) => {
+								this.props.submitFn(e);
+								this.setState({
+									edit: false,
+									editID: null,
+								});
+							}}
+						/>
+						<DeleteIcon handleClick={this.props.onClick} />
 					</li>
 				))}
 			</ul>
