@@ -3,6 +3,10 @@ li {
 	align-items: center;
 	gap: 15px;
 }
+li div {
+	display: flex;
+	align-items: center;
+}
 .hidden {
 	display: none;
 }
